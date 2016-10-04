@@ -1,0 +1,35 @@
+{
+  "name": "prosemirror-wikitext",
+  "version": "0.0.1",
+  "description": "ProseMirror Wikitext integration",
+  "main": "dist/to_wiki.js",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Chris Opperwall",
+      "email": "chriso@ifixit.com",
+      "web": "http://github.com/copperwall"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ifixit/prosemirror-wikitext.git"
+  },
+  "dependencies": {
+    "prosemirror-model": "~0.11.0",
+    "markdown-it": "^6.0.4"
+  },
+  "devDependencies": {
+    "buble": "~0.14.0",
+    "punycode": "^1.4.0",
+    "mocha": "^3.0.2",
+    "ist": "1.0.0",
+    "rimraf": "^2.5.4"
+  },
+  "scripts": {
+    "test": "node tests/unit.js",
+    "build": "rimraf dist && buble -i src -o dist",
+    "link-src": "rimraf dist && ln -s src dist",
+    "prepublish": "npm run build"
+  }
+}
