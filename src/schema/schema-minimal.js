@@ -17,6 +17,7 @@ const nodes = {
     toDOM(node) { return node.text }
   }
 }
+
 exports.nodes = nodes
 
 const marks = {
@@ -39,7 +40,8 @@ const marks = {
     toDOM() { return ["u"] }
   }
 }
+
 exports.marks = marks
 
-const minimal_schema = new Schema({nodes, marks})
-exports.minimal_schema = minimal_schema
+const schema = new Schema({nodes, marks})
+exports.schema = schema

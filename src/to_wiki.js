@@ -17,8 +17,6 @@ class WikiTextSerializer {
    }
 }
 
-exports.WikiTextSerializer = WikiTextSerializer
-
 class WikiTextSerializerState {
    constructor(nodes, marks) {
       this.nodes = nodes
@@ -50,8 +48,6 @@ class WikiTextSerializerState {
       })
    }
 }
-
-exports.WikiTextSerializerState = WikiTextSerializerState
 
 const serializer = new WikiTextSerializer({
    // Nodes
@@ -115,4 +111,4 @@ const serializer = new WikiTextSerializer({
    }
 })
 
-exports.serializer = serializer
+module.exports = serializer

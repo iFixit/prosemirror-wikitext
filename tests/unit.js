@@ -6,8 +6,8 @@
  * Oct 02, 2016
  */
 
-const {serializer} = require('../dist/to_wiki')
-const {schema} = require('../../schema-minimal/dist/schema-minimal')
+const {serializer, minimal_schema} = require('../dist/index')
+const {nodes, marks, schema} = minimal_schema
 
 /**
  * Test Definitions
