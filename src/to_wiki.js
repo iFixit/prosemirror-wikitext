@@ -37,6 +37,18 @@ class WikiTextSerializerState {
    render(node) {
       this.nodes[node.type.name](this, node)
    }
+
+   closeMarks(marks) {
+      marks.forEach(mark => {
+         this.out += this.marks[mark.type.name].close
+      })
+   }
+
+   openMarks(marks) {
+      marks.forEach(mark => {
+         this.out += this.marks[mark.type.name].open
+      })
+   }
 }
 
 exports.WikiTextSerializerState = WikiTextSerializerState
@@ -44,35 +56,46 @@ exports.WikiTextSerializerState = WikiTextSerializerState
 const serializer = new WikiTextSerializer({
    // Nodes
    paragraph(state, node) {
-      // TODO: If a paragraph is empty, should it just be thrown away?
-      // No, it doesn't look like that happens.
-      // HOWEVER, prosemirror might throw in an extra paragraph anyway.
-      // Trim should fix this anyways
-      //
       // For now this basically needs to make sure that this starts on a
       // newline and ends with a newline, and render whatever is within it.
       if (!/(^|\n)$/.test(state.out))
          state.out += "\n"
 
-      // NOTE: Okay, so node has its own forEach which just calls foreach on
-      // contents. Cool.
-      node.forEach((n) => state.render(n))
+      let openMarks = []
+
+      let handleMarks = (node) => {
+         let marks = node.marks || []
+
+         // If there are marks that aren't in the openMarks list, then apply
+         // them, this is where they start.
+         //
+         // Also add them to active.
+         //
+         // Mark train has no breaks.
+         let toClose = openMarks.filter(mark => marks.indexOf(mark) < 0)
+         state.closeMarks(toClose.reverse())
+         openMarks = openMarks.filter(mark => toClose.indexOf(mark) < 0)
+
+         // new nodes are in marks, but not in openMarks
+         let toOpen = marks.filter(mark => openMarks.indexOf(mark) < 0)
+         openMarks = toOpen.concat(openMarks)
+
+         state.openMarks(toOpen)
+
+         state.render(node)
+         // If there are any active marks that are no in the marks variable, it
+         // is time to close them.
+      }
+
+      node.forEach(handleMarks)
+      state.closeMarks(openMarks.reverse())
+
       state.out += "\n"
    },
    text(state, node) {
       // TODO: This uses  state.text, which I'm not what that does
-      let marks = node.marks || []
 
-      let start = marks.reduce((str, mark) => {
-         let markOpen = state.marks[mark.type.name].open
-         return str += markOpen
-      }, '')
-      let end = marks.reverse().reduce((str, mark) => {
-         let markClose = state.marks[mark.type.name].close
-         return str += markClose
-      }, '')
-
-      state.out += start + node.text + end
+      state.out += node.text
    }
 }, {
    // NOTE: At this moment it would be most helpful to know how prosemirror

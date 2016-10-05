@@ -61,7 +61,7 @@ const tests = [
    {
       'name': 'paragraph_with_uneven_nested_marks',
       'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"em"},{"type":"strong"}],"text":"This is italic and bold"},{"type":"text","marks":[{"type":"strong"}],"text":" and this is just bold"}]}]},
-      'expected': "'''''This is bold and italic'' and this is just bold'''"
+      'expected': "'''''This is italic and bold'' and this is just bold'''"
    }
 ]
 
@@ -81,8 +81,3 @@ let doTests = (test) => {
 
 // Run tests.
 tests.forEach(doTests)
-
-// TODO:
-//
-// Decide on whether or not marks should open and close across multiple nodes,
-// instead of only being applied to.
