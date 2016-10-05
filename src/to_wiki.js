@@ -59,7 +59,7 @@ const serializer = new WikiTextSerializer({
       // For now this basically needs to make sure that this starts on a
       // newline and ends with a newline, and render whatever is within it.
       if (!/(^|\n)$/.test(state.out))
-         state.out += "\n"
+         state.out += "\n\n"
 
       let openMarks = []
 
@@ -90,7 +90,7 @@ const serializer = new WikiTextSerializer({
       node.forEach(handleMarks)
       state.closeMarks(openMarks.reverse())
 
-      state.out += "\n"
+      state.out += "\n\n"
    },
    text(state, node) {
       // TODO: This uses  state.text, which I'm not what that does
