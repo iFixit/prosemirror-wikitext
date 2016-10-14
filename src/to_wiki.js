@@ -92,10 +92,11 @@ const serializer = new WikiTextSerializer({
       // TODO: This uses  state.text, which I'm not what that does
 
       state.out += node.text
+   },
+   hard_break(state, node) {
+      state.out += "[br]\n"
    }
 }, {
-   // NOTE: At this moment it would be most helpful to know how prosemirror
-   // works. Okay, so renderInline carries all of that weight.
    // Marks
    em: {
       open: "''",
@@ -108,6 +109,22 @@ const serializer = new WikiTextSerializer({
    underline: {
       open: "++",
       close: "++"
+   },
+   subscript: {
+      open: ",,",
+      close: ",,",
+   },
+   superscript: {
+      open: "^^",
+      close: "^^",
+   },
+   code: {
+      open: "``",
+      close: "``",
+   },
+   strikethrough: {
+      open: "~~",
+      close: "~~",
    }
 })
 
