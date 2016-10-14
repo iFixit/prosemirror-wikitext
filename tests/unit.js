@@ -6,8 +6,8 @@
  * Oct 02, 2016
  */
 
-const {serializer} = require('../dist/to_wiki')
-const {schema} = require('../../schema-minimal/dist/schema-minimal')
+const {serializer, minimal_schema} = require('../dist/index')
+const {nodes, marks, schema} = minimal_schema
 
 /**
  * Test Definitions
@@ -26,7 +26,7 @@ const tests = [
    {
       'name': 'two_paragraphs_no_formatting',
       'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"This is a paragraph with no formatting."}]},{"type":"paragraph","content":[{"type":"text","text":"This is a second paragraph."}]}]},
-      'expected': 'This is a paragraph with no formatting.\nThis is a second paragraph.'
+      'expected': 'This is a paragraph with no formatting.\n\nThis is a second paragraph.'
    },
    {
       'name': 'paragraph_all_bold',
