@@ -1,13 +1,15 @@
 /**
- * Unit tests for the wiki text serializer.
+ * Unit tests for the minimal schema for the wiki text serializer.
  *
  * Chris Opperwall
  *
  * Oct 02, 2016
  */
 
+const {Schema} = require("../../model")
 const {serializer, minimal_schema} = require('../dist/index')
-const {nodes, marks, schema} = minimal_schema
+const {nodes, marks} = minimal_schema
+const schema = new Schema({nodes, marks})
 
 /**
  * Test Definitions
@@ -78,6 +80,8 @@ let doTests = (test) => {
       console.log('PASS: ' + name)
    }
 }
+
+console.log('\nBeginning minimal schema unit tests...\n')
 
 // Run tests.
 tests.forEach(doTests)
