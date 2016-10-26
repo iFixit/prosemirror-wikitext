@@ -40,39 +40,39 @@ const tests = [
    },
    {
       'name': 'code_block',
-      'input': {"type":"doc","content":[{"type":"code_block","content":[{"type":"text","text":"This is a code block"}]}]},
-      'expected': "[code]\nThis is in a code block.[\\code]"
+      'input': {"type":"doc","content":[{"type":"code_block","content":[{"type":"text","text":"This is in a code block."}]}]},
+      'expected': "[code]\nThis is in a code block.\n[/code]"
    },
    // NOTE: We don't allow level 1 headings in wiki documents.
    {
       'name': 'heading2',
-      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","text":"Header Two"}]}]},
+      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","text":"Heading Two"}]}]},
       'expected': "== Heading Two =="
    },
    {
       'name': 'heading3',
-      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":3},"content":[{"type":"text","text":"Header Three"}]}]},
+      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":3},"content":[{"type":"text","text":"Heading Three"}]}]},
       'expected': "=== Heading Three ==="
    },
    {
       'name': 'heading4',
-      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":4},"content":[{"type":"text","text":"Header Four"}]}]},
+      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":4},"content":[{"type":"text","text":"Heading Four"}]}]},
       'expected': "==== Heading Four ===="
    },
    {
       'name': 'heading5',
-      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":5},"content":[{"type":"text","text":"Header Five"}]}]},
+      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":5},"content":[{"type":"text","text":"Heading Five"}]}]},
       'expected': "===== Heading Five ====="
    },
    {
       'name': 'heading6',
-      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":6},"content":[{"type":"text","text":"Header Six"}]}]},
+      'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":6},"content":[{"type":"text","text":"Heading Six"}]}]},
       'expected': "====== Heading Six ======"
    },
    {
       'name': 'heading2_with_bold_and_italic',
       'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Bold"},{"type":"text","text":" "},{"type":"text","marks":[{"type":"em"}],"text":"Italic"}]}]},
-      'expected': ""
+      'expected': "== '''Bold''' ''Italic'' =="
    },
    {
       'name': 'ordered_list_one_level',
