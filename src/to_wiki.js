@@ -84,11 +84,7 @@ class WikiTextSerializerState {
 const serializer = new WikiTextSerializer({
    // Nodes
    paragraph(state, node) {
-      if (!/(^|\n)$/.test(state.out))
-         state.out += "\n\n"
-
       state.inline(node);
-
       state.out += "\n\n"
    },
 
