@@ -27,7 +27,7 @@
     "rimraf": "^2.5.4"
   },
   "scripts": {
-    "test": "node tests/minimal.js && node tests/standard.js",
+    "test": "node tests/minimal.js && node tests/standard.js && node tests/lists.js",
     "build": "rimraf dist && buble -i src -o dist",
     "link-src": "rimraf dist && ln -s src dist",
     "prepublish": "npm run build"

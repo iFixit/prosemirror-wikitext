@@ -107,6 +107,14 @@ const serializer = new WikiTextSerializer({
       state.out += "[code]\n"
       state.inline(node)
       state.out += "\n[/code]\n"
+   },
+
+   ordered_list(state, node) {
+
+   },
+
+   bullet_list(state, node) {
+
    }
 }, {
    // Marks
