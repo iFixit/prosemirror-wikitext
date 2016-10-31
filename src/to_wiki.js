@@ -21,6 +21,7 @@ class WikiTextSerializerState {
    constructor(nodes, marks) {
       this.nodes = nodes
       this.marks = marks
+      this.prefix = ""
       this.out = ""
    }
 
@@ -34,6 +35,36 @@ class WikiTextSerializerState {
 
    render(node) {
       this.nodes[node.type.name](this, node)
+   }
+
+   /**
+    * Give a node, prefix, and a callback, append the given prefix to the
+    * current prefix and call the callback.
+    *
+    * After the callback has completed, restore the prefix to the old value.
+    */
+   renderPrefix(node, prefix, func) {
+      let oldPrefix = this.prefix
+      this.prefix = this.prefix + prefix
+
+      func()
+
+      this.prefix = oldPrefix
+   }
+
+   // Prefix a node's text with the given list syntax.
+   renderList(node, prefix) {
+      // Need to run renderPrefix() on each child of node.
+      // In this case node is either the ordered_list or bullet_list node, and
+      // prefix is either '#' or '*' based on the node type.
+      //
+      // Also the function given to prefix can use the child node type to
+      // determine whether or not to add a space to state.out
+      node.forEach((child) => {
+         this.renderPrefix(child, prefix, () => {
+            child.forEach((lineItemChild) => this.render(lineItemChild))
+         })
+      })
    }
 
    // Render inline text with their marks.
@@ -84,8 +115,16 @@ class WikiTextSerializerState {
 const serializer = new WikiTextSerializer({
    // Nodes
    paragraph(state, node) {
+      if (state.prefix) {
+         state.out += state.prefix + " "
+      }
+
       state.inline(node);
-      state.out += "\n\n"
+      state.out += "\n"
+
+      if (!state.prefix) {
+         state.out += "\n"
+      }
    },
 
    text(state, node) {
@@ -110,11 +149,11 @@ const serializer = new WikiTextSerializer({
    },
 
    ordered_list(state, node) {
-
+      state.renderList(node, '#')
    },
 
    bullet_list(state, node) {
-
+      state.renderList(node, '*')
    }
 }, {
    // Marks
