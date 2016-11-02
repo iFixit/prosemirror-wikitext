@@ -38,14 +38,20 @@ class WikiTextSerializerState {
    }
 
    /**
-    * Give a node, prefix, and a callback, append the given prefix to the
-    * current prefix and call the callback.
+    * Give a node, prefix, and a callback, replace the current prefix with the
+    * characters from the given prefix and append the given prefix.
+    *
+    * This is mostly useful for rendering nested lists. If the current prefix
+    * is '#' for an ordered lists and this is called with the prefix '*' for a
+    * bullet list, the prefix will become '**' so that the new list will be
+    * correctly rendered as a nested bullet list.
     *
     * After the callback has completed, restore the prefix to the old value.
     */
    renderPrefix(node, prefix, func) {
       let oldPrefix = this.prefix
-      this.prefix = this.prefix + prefix
+      let prefixDepth = oldPrefix.length + prefix.length
+      this.prefix = prefix.repeat(prefixDepth)
 
       func()
 

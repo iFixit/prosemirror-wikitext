@@ -44,6 +44,11 @@ const tests = [
       'name': 'unordered_list_multi_levels',
       'input': {"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"One"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"One again"}]}]}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Two"}]}]}]}]},
       'expected': "* One\n** One again\n* Two"
+   },
+   {
+      'name': 'nested_lists',
+      'input': {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"First Ordered"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second Nested Bullet"}]}]}]}]}]}]},
+      'expected': "# First Ordered\n** Second Nested Bullet"
    }
 ]
 
