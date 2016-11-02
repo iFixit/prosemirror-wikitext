@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-wikitext",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "ProseMirror Wikitext integration",
   "main": "dist/index.js",
   "license": "MIT",
@@ -16,8 +16,7 @@
     "url": "git://github.com/ifixit/prosemirror-wikitext.git"
   },
   "dependencies": {
-    "prosemirror-model": "~0.11.0",
-    "markdown-it": "^6.0.4"
+    "prosemirror-model": "~0.11.0"
   },
   "devDependencies": {
     "buble": "~0.14.0",
