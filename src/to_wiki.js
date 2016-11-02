@@ -107,13 +107,19 @@ class WikiTextSerializerState {
 
    closeMarks(marks) {
       marks.forEach(mark => {
-         this.out += this.marks[mark.type.name].close
+         let close = this.marks[mark.type.name].close
+         let markText = (typeof close == "function") ? close(mark) : close
+
+         this.out += markText
       })
    }
 
    openMarks(marks) {
       marks.forEach(mark => {
-         this.out += this.marks[mark.type.name].open
+         let open = this.marks[mark.type.name].open
+         let markText = (typeof open == "function") ? open(mark) : open
+
+         this.out += markText
       })
    }
 }
