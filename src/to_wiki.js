@@ -196,6 +196,10 @@ const serializer = new WikiTextSerializer({
    strikethrough: {
       open: "~~",
       close: "~~",
+   },
+   link: {
+      open: (mark) => "[" + mark.attrs.href + "|",
+      close: (mark) => (mark.attrs.target === "_blank") ? '|new_window=true]' : ']'
    }
 })
 

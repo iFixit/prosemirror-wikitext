@@ -38,6 +38,22 @@ const marks = {
     parseDOM: [{tag: "u"},
                {style: "text-decoration", getAttrs: value => value == "italic" && null}],
     toDOM() { return ["u"] }
+  },
+
+  link: {
+    attrs: {
+      href: {},
+      title: {default: null},
+      target: {default: null}
+    },
+    parseDOM: [{tag: "a[href]", getAttrs(dom) {
+     return {
+        href: dom.getAttribute('href'),
+        title: dom.getAttribute('title'),
+        target: dom.getAttribute('target')
+     }
+    }}],
+    toDOM(node) { return ["a", node.attrs] }
   }
 }
 

@@ -88,6 +88,21 @@ const marks = {
     parseDOM: [{tag: "strike"},
       {style: "text-decoration", getAttrs: value => value == "line-through" && null}],
     toDOM() { return ["strike"] }
+  },
+  link: {
+    attrs: {
+      href: {},
+      title: {default: null},
+      target: {default: null}
+    },
+    parseDOM: [{tag: "a[href]", getAttrs(dom) {
+     return {
+        href: dom.getAttribute('href'),
+        title: dom.getAttribute('title'),
+        target: dom.getAttribute('target')
+     }
+    }}],
+    toDOM(node) { return ["a", node.attrs] }
   }
 }
 

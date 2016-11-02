@@ -64,6 +64,16 @@ const tests = [
       'name': 'paragraph_with_uneven_nested_marks',
       'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"em"},{"type":"strong"}],"text":"This is italic and bold"},{"type":"text","marks":[{"type":"strong"}],"text":" and this is just bold"}]}]},
       'expected': "'''''This is italic and bold'' and this is just bold'''"
+   },
+   {
+      'name': 'paragraph_with_link',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"This is text and this is a "},{"type":"text","marks":[{"type":"link","attrs":{"href":"https://ifixit.com","title":"","target":null}}],"text":"link"},{"type":"text","text":"."}]}]},
+      'expected': "This is text and this is a [https://ifixit.com|link]."
+   },
+   {
+      'name': 'paragraph_with_link_with_target',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"This is text and this is a "},{"type":"text","marks":[{"type":"link","attrs":{"href":"https://ifixit.com","title":"","target": "_blank"}}],"text":"link"},{"type":"text","text":"."}]}]},
+      'expected': 'This is text and this is a [https://ifixit.com|link|new_window=true].'
    }
 ]
 
