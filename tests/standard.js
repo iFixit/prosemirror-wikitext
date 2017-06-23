@@ -43,6 +43,22 @@ const tests = [
       'input': {"type":"doc","content":[{"type":"code_block","content":[{"type":"text","text":"This is in a code block."}]}]},
       'expected': "[code]\nThis is in a code block.\n[/code]"
    },
+   {
+      'name': 'blockquote',
+      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"null"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
+      'expected': "[quote]\nThis is a quote.\n\n[/quote]"
+   },
+   {
+      'name': 'blockquote_with_attribution',
+      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"Abraham Lincoln"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
+      'expected': "[quote|Abraham Lincoln]\nThis is a quote.\n\n[/quote]"
+   },
+   {
+      'name': 'blockquote_with_format',
+      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"featured","attribute":"null"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
+      'expected': "[quote|format=featured]\nThis is a quote.\n\n[/quote]"
+   },
+
    // NOTE: We don't allow level 1 headings in wiki documents.
    {
       'name': 'heading2',

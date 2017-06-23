@@ -44,6 +44,17 @@ const nodes = {
     code: true,
     parseDOM: [{tag: "pre", preserveWhitespace: true}],
     toDOM() { return ["pre", ["code", 0]] }
+  },
+
+  blockquote: {
+     attrs: {
+        format: {default: "long"},
+        attribute: {default: null}
+     },
+     content: "block+",
+     group: "block",
+     parseDOM: [{tag: "blockquote"}],
+     toDOM() { return ["blockquote", 0] }
   }
 }
 

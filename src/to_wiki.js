@@ -160,6 +160,29 @@ const serializer = new WikiTextSerializer({
       state.out += "\n[/code]\n"
    },
 
+   blockquote(state, node) {
+      let {attribute, format} = node.attrs;
+      let attrSpec = node.type.spec.attrs;
+
+      if (attribute === "null") {
+         attribute = null;
+      }
+
+      state.out += "[quote"
+
+      if (attribute && attribute !== attrSpec.attribute.default) {
+         state.out += "|" + attribute
+      }
+
+      if (format && format !== attrSpec.format.default) {
+         state.out += "|format=" + format
+      }
+
+      state.out += "]\n"
+      state.inline(node)
+      state.out += "[/quote]\n"
+   },
+
    ordered_list(state, node) {
       state.renderList(node, '#')
    },
