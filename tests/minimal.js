@@ -6,8 +6,8 @@
  * Oct 02, 2016
  */
 
-const {Schema} = require("../../model")
-const {serializer, minimal_schema} = require('../dist/index')
+const {Schema} = require("prosemirror-model")
+const {serializer, minimal_schema} = require('../src')
 const {nodes, marks} = minimal_schema
 const schema = new Schema({nodes, marks})
 

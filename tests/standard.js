@@ -6,7 +6,7 @@
  * Oct 14, 2016
  */
 
-const {serializer, _, standard_schema} = require('../dist/index')
+const {serializer, _, standard_schema} = require('../src')
 const {nodes, marks, schema} = standard_schema
 
 /**

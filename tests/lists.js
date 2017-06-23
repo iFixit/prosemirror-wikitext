@@ -1,6 +1,6 @@
-const {Schema} = require("../../model")
-const {addListNodes} = require("../../schema-list")
-const {serializer, _, standard_schema} = require('../dist/index')
+const {Schema} = require("prosemirror-model")
+const {addListNodes} = require("prosemirror-schema-list")
+const {serializer, _, standard_schema} = require('../src')
 const {nodes, marks} = standard_schema
 
 const schema = new Schema({nodes, marks})
