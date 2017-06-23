@@ -81,7 +81,7 @@ let doTests = (test) => {
    let {name, input, expected} = test
    let doc = schema.nodeFromJSON(input)
    let output = serializer.serialize(doc)
-   
+
    if (output != expected) {
       console.log('FAIL: ' + name)
       console.log('\tExpected: ' + expected)

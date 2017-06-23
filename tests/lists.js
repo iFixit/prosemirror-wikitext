@@ -5,7 +5,7 @@ const {nodes, marks} = standard_schema
 
 const schema = new Schema({nodes, marks})
 const list_schema = new Schema({
-   nodes: addListNodes(schema.nodeSpec, "paragraph block*", "block"),
+   nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
    marks: schema.markSpec
 })
 
