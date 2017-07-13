@@ -30,7 +30,7 @@ class WikiTextSerializerState {
    }
 
    renderDoc(content) {
-      content.forEach((n) => this.render(n))
+      content.forEach(n => this.render(n))
    }
 
    render(node) {
@@ -66,9 +66,9 @@ class WikiTextSerializerState {
       //
       // Also the function given to prefix can use the child node type to
       // determine whether or not to add a space to state.out
-      node.forEach((child) => {
+      node.forEach(child => {
          this.renderPrefix(child, prefix, () => {
-            child.forEach((lineItemChild) => this.render(lineItemChild))
+            child.forEach(lineItemChild => this.render(lineItemChild))
          })
       })
    }
@@ -131,7 +131,7 @@ const serializer = new WikiTextSerializer({
          state.out += state.prefix + " "
       }
 
-      state.inline(node);
+      state.inline(node)
       state.out += "\n"
 
       if (!state.prefix) {
@@ -150,7 +150,7 @@ const serializer = new WikiTextSerializer({
    heading(state, node) {
       let headerTag = "=".repeat(node.attrs.level)
       state.out += headerTag + " "
-      state.inline(node);
+      state.inline(node)
       state.out += " " + headerTag + "\n"
    },
 
@@ -161,11 +161,11 @@ const serializer = new WikiTextSerializer({
    },
 
    blockquote(state, node) {
-      let {attribute, format} = node.attrs;
-      let attrSpec = node.type.spec.attrs;
+      let {attribute, format} = node.attrs
+      let attrSpec = node.type.spec.attrs
 
       if (attribute === "null") {
-         attribute = null;
+         attribute = null
       }
 
       state.out += "[quote"
@@ -221,8 +221,8 @@ const serializer = new WikiTextSerializer({
       close: "~~",
    },
    link: {
-      open: (mark) => "[" + mark.attrs.href + "|",
-      close: (mark) => (mark.attrs.target === "_blank") ? '|new_window=true]' : ']'
+      open: mark => "[" + mark.attrs.href + "|",
+      close: mark => (mark.attrs.target === "_blank") ? '|new_window=true]' : ']'
    }
 })
 
