@@ -89,6 +89,11 @@ const tests = [
       'name': 'heading2_with_bold_and_italic',
       'input': {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Bold"},{"type":"text","text":" "},{"type":"text","marks":[{"type":"em"}],"text":"Italic"}]}]},
       'expected': "== '''Bold''' ''Italic'' =="
+   },
+   {
+      'name': 'underline_and_subscript_nested',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"underline"}],"text":"Hey I'm underlined, "},{"type":"text","marks":[{"type":"underline"},{"type":"subscript"}],"text":"and I'm also subscript"}]}]},
+      'expected': "++Hey I'm underlined, ,,and I'm also subscript,,++"
    }
 ]
 
