@@ -2,7 +2,7 @@
   "name": "prosemirror-wikitext",
   "version": "0.1.0",
   "description": "ProseMirror Wikitext integration",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "license": "MIT",
   "maintainers": [
     {
