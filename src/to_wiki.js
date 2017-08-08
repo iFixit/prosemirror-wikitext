@@ -25,10 +25,6 @@ class WikiTextSerializerState {
       this.out = ""
    }
 
-   text(text) {
-      this.out += text
-   }
-
    renderDoc(content) {
       content.forEach(n => this.render(n))
    }
