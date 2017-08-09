@@ -132,7 +132,7 @@ const serializer = new WikiTextSerializer({
       // Marks that exist for the current node, but not in openMarks are new
       // marks, so they should be opened.
       let toOpen = marks.filter(mark => state.currentlyOpenMarks.indexOf(mark) < 0)
-      state.currentlyOpenMarks = toOpen.concat(state.currentlyOpenMarks)
+      state.currentlyOpenMarks = state.currentlyOpenMarks.concat(toOpen)
 
       state.openMarks(toOpen)
       state.out += node.text
