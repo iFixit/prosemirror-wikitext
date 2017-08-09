@@ -79,7 +79,7 @@ class WikiTextSerializerState {
 
       // After all nodes have been handled, close any marks that are in
       // openMarks, but in the reverse that they were added.
-      this.closeMarks(this.currentlyOpenMarks.reverse())
+      this.closeMarks(this.currentlyOpenMarks)
       this.currentlyOpenMarks = [];
    }
 
