@@ -27,6 +27,8 @@ class WikiTextSerializerState {
       // Keep track of currently open marks so that we know when they need to
       // be closed.
       this.currentlyOpenMarks = [];
+      // Tracks the remaining length of all the marks on each node.
+      this.lengths = new Map();
    }
 
    renderDoc(content) {
@@ -74,18 +76,66 @@ class WikiTextSerializerState {
    }
 
    // Apply marks to inline text.
+   // Find lengths of each continuous mark use and store in Map. (This can't be
+   // done simultaneously with the next step, because we need to know the full
+   // length of each mark in order to put them on in the right order.)
+   // For each text node (this is done in the renderer for text nodes):
+   //   1. Find closing marks
+   //   2. Pop marks off the stack until all the closing marks are gone. Close
+   //   all marks popped off.
+   //   3. Generate start characters for all marks present on this node and
+   //   not already on stack. Push onto the stack in the order generated. This
+   //   will include any marks popped in step 2 which are supposed to be on the
+   //   node.
+   //
    inline(node) {
+      const markLengths = new Map()
+      // Compute mark lengths
+      let findMarkLengths = (node) => {
+         // Gather all the marks on this node (by name, so they will match the
+         // marks from previous nodes).
+         let marks = node.marks.map(m => m.type.name)
+
+         // Marks that exist for the current node, but not in markLengths are
+         // new marks, so they should be added and set to 0. We'll add the
+         // length of the current text to both the new and old marks next.
+         marks.forEach(m => {
+            if (!markLengths.has(m)) {
+               markLengths.set(m, 0)
+            }
+         });
+         markLengths.forEach((v, k) => markLengths.set(k, v + node.text.length))
+
+         // Marks in markLengths that do not exist on the current node are no
+         // longer needed. Remove them. The ones that do exist, however, should
+         // be in the list of lengths for the marks on this node.
+         let lengths = new Map()
+         markLengths.forEach((v, k) => {
+            if (marks.indexOf(k) < 0) {
+               markLengths.delete(k)
+            } else {
+               lengths.set(k, v)
+            }
+         });
+         // Store the list of lengths for later use by the renderer.
+         this.lengths.set(node, lengths)
+      };
+
+      const children = []
+      node.forEach(c => children.push(c))
+      children.reverse()
+      children.forEach(findMarkLengths)
+
       node.forEach(child => this.render(child))
 
-      // After all nodes have been handled, close any marks that are in
-      // openMarks, but in the reverse that they were added.
+      // After all nodes have been handled, close any marks that are still open
       this.closeMarks(this.currentlyOpenMarks)
-      this.currentlyOpenMarks = [];
+      this.currentlyOpenMarks = []
    }
 
    closeMarks(marks) {
       this.out += marks.reduceRight((carry, mark) => {
-         let close = this.marks[mark.type.name].close
+         let close = this.marks[mark].close
          let markText = (typeof close == "function") ? close(mark) : close
 
          return carry + markText
@@ -94,7 +144,7 @@ class WikiTextSerializerState {
 
    openMarks(marks) {
       this.out += marks.reduce((carry, mark) => {
-         let open = this.marks[mark.type.name].open
+         let open = this.marks[mark].open
          let markText = (typeof open == "function") ? open(mark) : open
 
          return carry + markText
@@ -118,23 +168,48 @@ const serializer = new WikiTextSerializer({
    },
 
    text(state, node) {
-      let marks = node.marks || []
+      let marks = node.marks.map(m => m.type.name)
+
+      let firstNeedle = function(haystack, needles) {
+         return needles.reduce((min, needle) =>
+          Math.min(min, haystack.indexOf(needle)), haystack.length)
+      }
 
       // If openMarks includes marks that do not exist on the current node,
       // close those marks before adding new marks and the inline text to
       // the output.
-      let toClose = state.currentlyOpenMarks.filter(mark => marks.indexOf(mark) < 0)
-      state.closeMarks(toClose)
+      const toClose = state.currentlyOpenMarks.
+       filter(openMark => marks.indexOf(openMark) < 0)
+      // We need to close all marks that were opened after the oldest mark we
+      // need to close, so that we don't get overlapping marks (i.e. `<i>italic
+      // <b>italic bold</i> bold</b>`, but in wiki text).
+      const earliestClose = firstNeedle(state.currentlyOpenMarks, toClose)
 
+      state.closeMarks(state.currentlyOpenMarks.slice(earliestClose))
       // Remove closed marks from openMarks.
-      state.currentlyOpenMarks = state.currentlyOpenMarks.filter(mark => toClose.indexOf(mark) < 0)
+      state.currentlyOpenMarks = state.currentlyOpenMarks.slice(0, earliestClose)
 
-      // Marks that exist for the current node, but not in openMarks are new
-      // marks, so they should be opened.
-      let toOpen = marks.filter(mark => state.currentlyOpenMarks.indexOf(mark) < 0)
+      // Marks that exist for the current node, but not in currentlyOpenMarks
+      // are new marks, so they should be opened. This will include marks that
+      // were closed to get to the earliest close mark, since they won't be in
+      // currentlyOpenMarks.
+      const toOpen = []
+      marks.forEach(mark => {
+         if (state.currentlyOpenMarks.indexOf(mark) < 0) {
+            toOpen.push(mark)
+         }
+      })
+      const lengths = state.lengths.get(node)
+      // Don't blow up if we don't have length information available. We
+      // probably were handed a lone text node.
+      if (lengths) {
+         // For efficiency: open the marks that will stay open the longest first.
+         toOpen.sort((a, b) => lengths.get(b) - lengths.get(a))
+      }
+
       state.currentlyOpenMarks = state.currentlyOpenMarks.concat(toOpen)
-
       state.openMarks(toOpen)
+
       state.out += node.text
    },
 
