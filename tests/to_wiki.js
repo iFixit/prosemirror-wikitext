@@ -35,7 +35,7 @@ const tests = [
 	    "text": "styles"
          }
       ]}]},
-      'expected': "'''this ''is ++text ++'''''++''with ''styles++"
+      'expected': "'''this ''is ++text++''''' ++''with'' styles++"
    },
 ]
 

@@ -27,6 +27,8 @@ class WikiTextSerializerState {
       // Keep track of currently open marks so that we know when they need to
       // be closed.
       this.currentlyOpenMarks = [];
+      // Store spaces from the end of a node to be output after the wiki markup
+      this.spaces = '';
    }
 
    renderDoc(content) {
@@ -134,6 +136,8 @@ class WikiTextSerializerState {
       // After all nodes have been handled, close any marks that are still open
       this.closeMarks(this.currentlyOpenMarks)
       this.currentlyOpenMarks = []
+      // Throw away spaces that were at the end of the text. We don't need them.
+      this.spaces = ''
    }
 
    /**
@@ -182,11 +186,17 @@ class WikiTextSerializerState {
          toOpen.sort((a, b) => lengths.get(b) - lengths.get(a))
       }
 
+      // Borrows from src/to_markdown.js from prosemirror-markdown
+      const [_, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
+
+      this.out += this.spaces
+      this.out += start
+      this.spaces = end
 
       this.currentlyOpenMarks = this.currentlyOpenMarks.concat(toOpen)
       this.openMarks(toOpen)
 
-      this.out += node.text
+      this.out += text
    }
 
    closeMarks(marks) {
