@@ -91,8 +91,8 @@ const marks = {
   },
 
   code: {
-    parseDOM: [{tag: "code"}],
-    toDOM() { return ["code"] }
+    parseDOM: [{tag: "tt"}],
+    toDOM() { return ["tt"] }
   },
 
   strikethrough: {
