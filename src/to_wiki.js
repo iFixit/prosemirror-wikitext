@@ -152,8 +152,13 @@ class WikiTextSerializerState {
       let marks = node.marks.map(m => m.type.name)
 
       let firstNeedle = function(haystack, needles) {
-         return needles.reduce((min, needle) =>
+         const result = needles.reduce((min, needle) =>
           Math.min(min, haystack.indexOf(needle)), haystack.length)
+         if (result === -1) {
+            throw new Exception("Don't use this function on `needles` that " +
+             "may not be in `haystack`");
+         }
+         return result;
       }
 
       // If currentlyOpenMarks includes marks that do not exist on the current
