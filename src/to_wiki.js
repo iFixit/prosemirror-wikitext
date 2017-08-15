@@ -76,7 +76,8 @@ class WikiTextSerializerState {
    }
 
    // Apply marks to inline text. This involves the following two steps:
-   // 1. Find the length of each continuous mark use and store in Map. (This
+   // 1. Do a first pass over the nodes to get the length of each continuous
+   // mark. Save this information in a Map for the second pass. (This
    // can't be done simultaneously with the next step, because we need to know
    // the full length of each mark in order to apply them in the right order.)
    // 2. For each text node (this is done in the renderer for text nodes):
