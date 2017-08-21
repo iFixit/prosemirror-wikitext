@@ -155,7 +155,7 @@ class WikiTextSerializerState {
          const result = needles.reduce((min, needle) =>
           Math.min(min, haystack.indexOf(needle)), haystack.length)
          if (result === -1) {
-            throw new Exception("Don't use this function on `needles` that " +
+            throw new Error("Don't use this function on `needles` that " +
              "may not be in `haystack`");
          }
          return result;
