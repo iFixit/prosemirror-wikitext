@@ -50,8 +50,13 @@ const tests = [
    },
    {
       'name': 'blockquote_with_attribution',
-      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"Abraham Lincoln"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
+      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "text": "Abraham Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
       'expected': "[quote|Abraham Lincoln]\nThis is a quote.\n\n[/quote]"
+   },
+   {
+      'name': 'blockquote_with_bold_attribution',
+      'input': {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "marks": [{"type": "strong"}], "type": "text", "text": "Abraham"}, {"type": "text", "text": " Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]},
+      'expected': "[quote|'''Abraham''' Lincoln]\nThis is a quote.\n\n[/quote]"
    },
    {
       'name': 'blockquote_with_format',
