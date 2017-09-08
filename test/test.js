@@ -1,10 +1,12 @@
 const assert = require('assert')
 
 const {Schema} = require('prosemirror-model')
+const {addListNodes} = require("prosemirror-schema-list")
 const {serializer, minimal_schema, standard_schema} = require('../src')
 
 const {minimalNodes, minimalMarks} = minimal_schema
 const {standardNodes, standardMarks} = standard_schema
+
 const minimalSchema = new Schema({
    nodes: minimal_schema.nodes,
    marks: minimal_schema.marks
@@ -12,6 +14,10 @@ const minimalSchema = new Schema({
 const standardSchema = new Schema({
    nodes: standard_schema.nodes,
    marks: standard_schema.marks
+})
+const listSchema = new Schema({
+   nodes: addListNodes(standardSchema.spec.nodes, "paragraph block*", "block"),
+   marks: standardSchema.markSpec
 })
 
 function serializeTestCase(schema, input) {
@@ -21,6 +27,7 @@ function serializeTestCase(schema, input) {
 
 const serializeMinimalTestCase = serializeTestCase.bind(null, minimalSchema)
 const serializeStandardTestCase = serializeTestCase.bind(null, standardSchema)
+const serializeListTestCase = serializeTestCase.bind(null, listSchema)
 
 describe('Minimal Tests', function() {
    describe('Empty document', function() {
@@ -154,6 +161,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Paragraph with superscripts', function() {
       it('should include wiki superscripts tags', function() {
          const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":" This is a "},{"type":"text","marks":[{"type":"superscript"}],"text":"superscripted"},{"type":"text","text":" word."}]}]}
@@ -163,6 +171,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Paragraph with monospace', function() {
       it('should include wiki monospace/teletype tags', function() {
          const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":" This is a "},{"type":"text","marks":[{"type":"code"}],"text":"code"},{"type":"text","text":" word."}]}]}
@@ -172,6 +181,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Paragraph with strikethrough', function() {
       it('should include wiki strikethrough tags', function() {
          const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":" This is a "},{"type":"text","marks":[{"type":"strikethrough"}],"text":"strikethrough"},{"type":"text","text":" word."}]}]}
@@ -181,6 +191,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Paragraph with hard break', function() {
       it('should include wiki hard break tags', function() {
          const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"This paragraph has a"},{"type":"hard_break"},{"type":"text","text":"hard break."}]}]}
@@ -190,6 +201,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Code block', function() {
       it('should serialize into a wiki text code block', function() {
          const input = {"type":"doc","content":[{"type":"code_block","content":[{"type":"text","text":"This is in a code block."}]}]}
@@ -199,6 +211,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Blockquote', function() {
       it('should serialize into a wiki text blockquote', function() {
          const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"null"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
@@ -208,6 +221,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Blockquote with attribution', function() {
       it('should include the attribution text', function() {
          const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"Abraham Lincoln"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
@@ -217,6 +231,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Blockquote with format', function() {
       it('should include the correct format', function() {
          const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"featured","attribute":"null"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
@@ -226,6 +241,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 2 heading', function() {
       it('should serialize into a level 2 wiki text heading', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","text":"Heading Two"}]}]}
@@ -235,6 +251,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 3 heading', function() {
       it('should serialize into a level 3 wiki text heading', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":3},"content":[{"type":"text","text":"Heading Three"}]}]}
@@ -244,6 +261,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 4 heading', function() {
       it('should serialize into a level 4 wiki text heading', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":4},"content":[{"type":"text","text":"Heading Four"}]}]}
@@ -253,6 +271,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 5 heading', function() {
       it('should serialize into a level 5 wiki text heading', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":5},"content":[{"type":"text","text":"Heading Five"}]}]}
@@ -262,6 +281,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 6 heading', function() {
       it('should serialize into a level 6 wiki text heading', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":6},"content":[{"type":"text","text":"Heading Six"}]}]}
@@ -271,6 +291,7 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Level 2 heading with bold and italic marks', function() {
       it('should serialize into a level 2 wiki text heading with bold and italic', function() {
          const input = {"type":"doc","content":[{"type":"heading","attrs":{"level":2},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Bold"},{"type":"text","text":" "},{"type":"text","marks":[{"type":"em"}],"text":"Italic"}]}]}
@@ -280,12 +301,95 @@ describe('Standard Schema Tests', function() {
          assert.equal(expected, output)
       })
    })
+
    describe('Nested underline and subscript tags', function() {
       it('should serialize into nested marks in the correct order', function() {
          const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"underline"}],"text":"Hey I'm underlined, "},{"type":"text","marks":[{"type":"underline"},{"type":"subscript"}],"text":"and I'm also subscript"}]}]}
          const expected = "++Hey I'm underlined, ,,and I'm also subscript,,++"
 
          const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+})
+
+describe('List Schema Tests', function() {
+   describe('One level ordered list', function() {
+      it('should serialize into a one level ordered list', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"First list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Third list item"}]}]}]}]}
+         const expected = "# First list item\n# Second list item\n# Third list item"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Two level ordered list', function() {
+      it('should serialize into a two level ordered list', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"one"}]},{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"two"}]}]}]}]}]}]}
+         const expected = "# one\n## two"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Three level ordered list', function() {
+      it('should serialize into a three level ordered list', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"one"}]},{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"two"}]},{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"three"}]}]}]}]}]}]}]}]}
+         const expected = "# one\n## two\n### three"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('One level bulleted list', function() {
+      it('should serialize into a one level bulleted list', function() {
+         const input = {"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"First list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Third list item"}]}]}]}]}
+         const expected = "* First list item\n* Second list item\n* Third list item"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Two level bulleted list', function() {
+      it('should serialize into a two level bulleted list', function() {
+         const input = {"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"one"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"two"}]}]}]}]}]}]}
+         const expected = "* one\n** two"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Three level bulleted list', function() {
+      it('should serialize into a three level bulleted list', function() {
+         const input = {"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"one"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"two"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"three"}]}]}]}]}]}]}]}]}
+         const expected = "* one\n** two\n*** three"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('A one level and two level bulleted list', function() {
+      it('should serialize into one level bulleted list with a second level list entry', function() {
+         const input = {"type":"doc","content":[{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"One"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"One again"}]}]}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Two"}]}]}]}]}
+         const expected = "* One\n** One again\n* Two"
+
+         const output = serializeListTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Nested ordered and bulleted lists', function() {
+      it('should serialize into an ordered list with a bulleted sublist', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"First Ordered"}]},{"type":"bullet_list","content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second Nested Bullet"}]}]}]}]}]}]}
+         const expected = "# First Ordered\n** Second Nested Bullet"
+
+         const output = serializeListTestCase(input)
          assert.equal(expected, output)
       })
    })
