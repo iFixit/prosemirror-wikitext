@@ -224,8 +224,18 @@ describe('Standard Schema Tests', function() {
 
    describe('Blockquote with attribution', function() {
       it('should include the attribution text', function() {
-         const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute":"Abraham Lincoln"}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
+         const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "text": "Abraham Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
          const expected = "[quote|Abraham Lincoln]\nThis is a quote.\n\n[/quote]"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Blockquote with bold attribution', function() {
+      it('should include the bolded attribution text', function() {
+         const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "marks": [{"type": "strong"}], "type": "text", "text": "Abraham"}, {"type": "text", "text": " Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
+         const expected = "[quote|'''Abraham''' Lincoln]\nThis is a quote.\n\n[/quote]"
 
          const output = serializeStandardTestCase(input)
          assert.equal(expected, output)
