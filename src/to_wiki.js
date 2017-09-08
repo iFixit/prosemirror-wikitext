@@ -149,7 +149,7 @@ class WikiTextSerializerState {
     * apply marks to the text
     */
    text(node, marklengths) {
-      let marks = node.marks.map(m => m.type.name)
+      let marks = node.marks
 
       let firstNeedle = function(haystack, needles) {
          const result = needles.reduce((min, needle) =>
@@ -165,7 +165,7 @@ class WikiTextSerializerState {
       // node, close those marks before adding new marks and the inline text to
       // the output.
       const toClose = this.currentlyOpenMarks.
-       filter(openMark => marks.indexOf(openMark) < 0)
+       filter(openMark => marks.filter(m => openMark.eq(m)).length == 0)
       // We need to close all marks that were opened after the oldest mark we
       // need to close, so that we don't get overlapping marks (i.e. `<i>italic
       // <b>italic bold</i> bold</b>`, but in wiki text).
@@ -179,13 +179,13 @@ class WikiTextSerializerState {
       // should be opened. This will include marks that were closed to get to
       // the earliest close mark, since they won't be in currentlyOpenMarks.
       const toOpen = marks.filter(mark =>
-       this.currentlyOpenMarks.indexOf(mark) < 0)
+       this.currentlyOpenMarks.filter(o => mark.eq(o)).length == 0)
       // If we have length information available, use it.
       if (marklengths) {
          const lengths = marklengths.get(node)
          if (lengths) {
             // For efficiency: open the marks that will stay open the longest first.
-            toOpen.sort((a, b) => lengths.get(b) - lengths.get(a))
+            toOpen.sort((a, b) => lengths.get(b.type.name) - lengths.get(a.type.name))
          }
       }
 
@@ -204,7 +204,7 @@ class WikiTextSerializerState {
 
    closeMarks(marks) {
       this.out += marks.reduceRight((carry, mark) => {
-         let close = this.marks[mark].close
+         let close = this.marks[mark.type.name].close
          let markText = (typeof close == "function") ? close(mark) : close
 
          return carry + markText
@@ -213,7 +213,7 @@ class WikiTextSerializerState {
 
    openMarks(marks) {
       this.out += marks.reduce((carry, mark) => {
-         let open = this.marks[mark].open
+         let open = this.marks[mark.type.name].open
          let markText = (typeof open == "function") ? open(mark) : open
 
          return carry + markText
