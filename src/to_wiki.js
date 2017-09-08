@@ -11,16 +11,19 @@ class WikiTextSerializer {
    }
 
    serialize(content) {
-      let state = new WikiTextSerializerState(this.nodes, this.marks)
+      const schema = content.type.schema
+      const state = new WikiTextSerializerState(this.nodes, this.marks, schema)
+
       state.renderDoc(content)
       return state.out.trim()
    }
 }
 
 class WikiTextSerializerState {
-   constructor(nodes, marks) {
+   constructor(nodes, marks, schema) {
       this.nodes = nodes
       this.marks = marks
+      this.schema = schema
       this.prefix = ""
       this.out = ""
    }
@@ -172,8 +175,14 @@ const serializer = new WikiTextSerializer({
 
       state.out += "[quote"
 
+      // A blockquote attribute can be rich text, so we store it in a node
+      // attribute and then built it into an actual node using
+      // schema.nodeFromJSON.
       if (attribute && attribute !== attrSpec.attribute.default) {
-         state.out += "|" + attribute
+         state.out += "|"
+
+         attribute = state.schema.nodeFromJSON(attribute)
+         state.inline(attribute)
       }
 
       if (format && format !== attrSpec.format.default) {
