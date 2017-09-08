@@ -37,6 +37,22 @@ const tests = [
       ]}]},
       'expected': "'''this ''is ++text++''''' ++''with'' styles++"
    },
+   {
+      'name': 'adjacent links',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[
+         {
+            "type": "text",
+            "marks": [{"type": "link", "attrs": {"href": "http://example.com"}}],
+	    "text": "this link"
+         },
+         {
+            "type": "text",
+            "marks": [{"type": "link", "attrs": {"href": "https://www.ifixit.com"}}],
+	    "text": "is near this one"
+         },
+      ]}]},
+      'expected': "[http://example.com|this link][https://www.ifixit.com|is near this one]"
+   },
 ]
 
 let doTests = (test) => {
