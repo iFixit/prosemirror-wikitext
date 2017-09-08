@@ -189,17 +189,22 @@ class WikiTextSerializerState {
          }
       }
 
-      // Borrows from src/to_markdown.js from prosemirror-markdown
-      const [_, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
-
-      this.out += this.spaces
-      this.out += start
-      this.spaces = end
-
       this.currentlyOpenMarks = this.currentlyOpenMarks.concat(toOpen)
-      this.openMarks(toOpen)
+      if (node.isText) {
+         // Borrows from src/to_markdown.js from prosemirror-markdown
+         const [_, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
+         this.out += this.spaces
+         this.out += start
+         this.openMarks(toOpen)
+         this.out += text
+         this.spaces = end
+      } else {
+         this.out += this.spaces
+         this.spaces = ''
+         this.openMarks(toOpen)
+         this.render(node);
+      }
 
-      this.out += text
    }
 
    closeMarks(marks) {
