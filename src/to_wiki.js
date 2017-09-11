@@ -168,7 +168,7 @@ class WikiTextSerializerState {
       // node, close those marks before adding new marks and the inline text to
       // the output.
       const toClose = this.currentlyOpenMarks.
-       filter(openMark => marks.filter(m => openMark.eq(m)).length == 0)
+       filter(openMark => marks.filter(m => openMark.eq(m)).length === 0)
       // We need to close all marks that were opened after the oldest mark we
       // need to close, so that we don't get overlapping marks (i.e. `<i>italic
       // <b>italic bold</i> bold</b>`, but in wiki text).
@@ -182,7 +182,7 @@ class WikiTextSerializerState {
       // should be opened. This will include marks that were closed to get to
       // the earliest close mark, since they won't be in currentlyOpenMarks.
       const toOpen = marks.filter(mark =>
-       this.currentlyOpenMarks.filter(o => mark.eq(o)).length == 0)
+       this.currentlyOpenMarks.filter(o => mark.eq(o)).length === 0)
       // If we have length information available, use it.
       if (marklengths) {
          const lengths = marklengths.get(node)
@@ -213,7 +213,7 @@ class WikiTextSerializerState {
    closeMarks(marks) {
       this.out += marks.reduceRight((carry, mark) => {
          let close = this.marks[mark.type.name].close
-         let markText = (typeof close == "function") ? close(mark) : close
+         let markText = (typeof close === "function") ? close(mark) : close
 
          return carry + markText
       }, '')
@@ -222,7 +222,7 @@ class WikiTextSerializerState {
    openMarks(marks) {
       this.out += marks.reduce((carry, mark) => {
          let open = this.marks[mark.type.name].open
-         let markText = (typeof open == "function") ? open(mark) : open
+         let markText = (typeof open === "function") ? open(mark) : open
 
          return carry + markText
       }, '')
