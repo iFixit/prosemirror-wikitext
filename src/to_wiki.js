@@ -205,7 +205,7 @@ class WikiTextSerializerState {
          this.out += this.spaces
          this.spaces = ''
          this.openMarks(toOpen)
-         this.render(node);
+         this.render(node)
       }
 
    }
