@@ -1,5 +1,7 @@
 # Wikitext Serializer for Prosemirror
 
+[![Build Status](https://travis-ci.org/iFixit/prosemirror-wikitext.svg?branch=master)](https://travis-ci.org/iFixit/prosemirror-wikitext)
+
 This project supports taking a Prosemirror document and serializing it into
 iFixit's custom wiki text syntax.
 

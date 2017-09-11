@@ -7,7 +7,7 @@ const nodes = {
 
   paragraph: {
     content: "inline<_>*",
-    group: "block",
+    group: "block quoteless",
     parseDOM: [{tag: "p"}],
     toDOM() { return ["p", 0] }
   },
@@ -29,7 +29,7 @@ const nodes = {
   heading: {
       attrs: {level: {default: 1}},
       content: "text<_>*",
-      group: "block",
+      group: "block quoteless",
       parseDOM: [{tag: "h2", attrs: {level: 2}},
                  {tag: "h3", attrs: {level: 3}},
                  {tag: "h4", attrs: {level: 4}},
@@ -40,7 +40,7 @@ const nodes = {
 
   code_block: {
     content: "text*",
-    group: "block",
+    group: "block quoteless",
     code: true,
     parseDOM: [{tag: "pre", preserveWhitespace: true}],
     toDOM() { return ["pre", ["code", 0]] }
@@ -51,7 +51,7 @@ const nodes = {
         format: {default: "long"},
         attribute: {default: null}
      },
-     content: "block+",
+     content: "quoteless+",
      group: "block",
      parseDOM: [{tag: "blockquote"}],
      toDOM() { return ["blockquote", 0] }
@@ -91,8 +91,8 @@ const marks = {
   },
 
   code: {
-    parseDOM: [{tag: "code"}],
-    toDOM() { return ["code"] }
+    parseDOM: [{tag: "tt"}],
+    toDOM() { return ["tt"] }
   },
 
   strikethrough: {
