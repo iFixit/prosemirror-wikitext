@@ -195,7 +195,7 @@ class WikiTextSerializerState {
       this.currentlyOpenMarks = this.currentlyOpenMarks.concat(toOpen)
       if (node.isText) {
          // Borrows from src/to_markdown.js from prosemirror-markdown
-         const [_, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
+         const [match, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
          this.out += this.spaces
          this.out += start
          this.openMarks(toOpen)
