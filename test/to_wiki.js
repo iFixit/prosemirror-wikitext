@@ -64,6 +64,48 @@ const tests = [
       'expected': "'''this ''is''''' ''text'' '''with styles'''"
    },
    {
+      'name': 'interleaved formatting 3',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[
+         {
+            "type": "text",
+            "marks": [{"type": "strong"}],
+	    "text": "this"
+         },
+         {
+            "type": "text",
+            "marks": [{"type": "strong"},{"type": "em"}],
+	    "text": "is"
+         },
+         {
+            "type": "text",
+            "marks": [{"type": "em"}],
+	    "text": "text"
+         },
+         {
+            "type": "text",
+            "marks": [{"type": "strong"}],
+	    "text": "with styles"
+         }
+      ]}]},
+      'expected': "'''this''is'''''''text'''''with styles'''"
+   },
+   {
+      'name': 'Formatted word with punctuation',
+      'input': {"type":"doc","content":[{"type":"paragraph","content":[
+         {
+            "type": "text",
+            "marks": [],
+	    "text": "This is a "
+         },
+         {
+            "type": "text",
+            "marks": [{"type": "strong"},{"type": "em"},{"type": "underline"}],
+	    "text": "thing!"
+         },
+      ]}]},
+      'expected': "This is a '''''++thing!++'''''"
+   },
+   {
       'name': 'adjacent links',
       'input': {"type":"doc","content":[{"type":"paragraph","content":[
          {
