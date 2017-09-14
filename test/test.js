@@ -404,3 +404,55 @@ describe('List Schema Tests', function() {
       })
    })
 })
+
+describe('Advanced Formatting Tests', function() {
+   describe('Interleaved inline marks', function() {
+      it('should open and close correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[ { "type": "text", "marks": [{"type": "strong"}], "text": "this " }, { "type": "text", "marks": [{"type": "strong"},{"type": "em"}], "text": "is " }, { "type": "text", "marks": [{"type": "strong"},{"type": "em"},{"type": "underline"}], "text": "text " }, { "type": "text", "marks": [{"type": "em"},{"type": "underline"}], "text": "with " }, { "type": "text", "marks": [{"type": "underline"}], "text": "styles" } ]}]}
+         const expected = "'''this ''is ++text++''''' ++''with'' styles++"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Interleaved bold and italic marks', function() {
+      it('should open and close correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[ { "type": "text", "marks": [{"type": "strong"}], "text": "this " }, { "type": "text", "marks": [{"type": "strong"},{"type": "em"}], "text": "is " }, { "type": "text", "marks": [{"type": "em"}], "text": "text " }, { "type": "text", "marks": [{"type": "strong"}], "text": "with styles" } ]}]}
+         const expected = "'''this ''is''''' ''text'' '''with styles'''"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Interleaved bold and italic marks without spaces ', function() {
+      it('should open and close correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[ { "type": "text", "marks": [{"type": "strong"}], "text": "this" }, { "type": "text", "marks": [{"type": "strong"},{"type": "em"}], "text": "is" }, { "type": "text", "marks": [{"type": "em"}], "text": "text" }, { "type": "text", "marks": [{"type": "strong"}], "text": "with styles" } ]}]}
+         const expected = "'''this''is'''''''text'''''with styles'''"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Formatted words with punctuation', function() {
+      it('should have their marks open and close correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[],"text":"This is a "},{"type":"text","marks":[{"type":"strong"},{"type":"em"},{"type":"underline"}],"text":"thing!"},]}]}
+         const expected = "This is a '''''++thing!++'''''"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+
+   describe('Adjacent links', function() {
+      it('should render correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"link","attrs":{"href":"http://example.com"}}],"text":"this link"},{"type":"text","marks":[{"type":"link","attrs":{"href":"https://www.ifixit.com"}}],"text":"is near this one"},]}]}
+         const expected = "[http://example.com|this link][https://www.ifixit.com|is near this one]"
+
+         const output = serializeStandardTestCase(input)
+         assert.equal(expected, output)
+      })
+   })
+})
