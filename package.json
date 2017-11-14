@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-wikitext",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "ProseMirror Wikitext integration",
   "main": "dist/index.js",
   "license": "MIT",
@@ -30,6 +30,6 @@
     "test": "mocha",
     "build": "rimraf dist && buble -i src -o dist",
     "link-src": "rimraf dist && ln -s src dist",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build"
   }
 }
