@@ -6,7 +6,8 @@ const nodes = {
   },
 
   paragraph: {
-    content: "inline<_>*",
+    content: "inline*",
+    marks: "_",
     group: "block",
     parseDOM: [{tag: "p"}],
     toDOM() { return ["p", 0] }

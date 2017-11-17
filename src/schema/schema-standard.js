@@ -6,7 +6,8 @@ const nodes = {
   },
 
   paragraph: {
-    content: "inline<_>*",
+    content: "inline*",
+    marks: "_",
     group: "block quoteless",
     parseDOM: [{tag: "p"}],
     toDOM() { return ["p", 0] }
@@ -28,7 +29,8 @@ const nodes = {
   // Wikis only support headings with levels 2-6.
   heading: {
       attrs: {level: {default: 1}},
-      content: "text<_>*",
+      content: "text*",
+      marks: "_",
       group: "block quoteless",
       parseDOM: [{tag: "h2", attrs: {level: 2}},
                  {tag: "h3", attrs: {level: 3}},
