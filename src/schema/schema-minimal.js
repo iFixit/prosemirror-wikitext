@@ -47,6 +47,7 @@ const marks = {
       title: {default: null},
       target: {default: null}
     },
+    inclusive: false,
     parseDOM: [{tag: "a[href]", getAttrs(dom) {
      return {
         href: dom.getAttribute('href'),
