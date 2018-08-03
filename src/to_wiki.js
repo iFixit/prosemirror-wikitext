@@ -261,6 +261,11 @@ const serializer = new WikiTextSerializer({
       state.out += " " + headerTag + "\n"
    },
 
+   image(state, node) {
+      const {imageid, align, size} = node.attrs
+      state.out += `[image|${imageid}|align=${align}|size=${size}]`
+   },
+
    code_block(state, node) {
       state.out += "[code]\n"
       state.inline(node)

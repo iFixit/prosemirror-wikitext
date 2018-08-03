@@ -4,9 +4,6 @@ const {Schema} = require('prosemirror-model')
 const {addListNodes} = require("prosemirror-schema-list")
 const {serializer, minimal_schema, standard_schema} = require('../src')
 
-const {minimalNodes, minimalMarks} = minimal_schema
-const {standardNodes, standardMarks} = standard_schema
-
 const minimalSchema = new Schema({
    nodes: minimal_schema.nodes,
    marks: minimal_schema.marks
@@ -453,6 +450,16 @@ describe('Advanced Formatting Tests', function() {
 
          const output = serializeStandardTestCase(input)
          assert.equal(expected, output)
+      })
+   })
+
+   describe('Images', function() {
+      it('should render correctly', function() {
+         const input = {"type":"doc","content":[{"type":"paragraph","content":[{"type":"image","attrs":{"imageid": 1024,"src":"https://image.com","size":"standard","align":"left"}}]}]}
+         const expected = "[image|1024|align=left|size=standard]"
+
+         const output = serializeStandardTestCase(input);
+         assert.equal(expected, output);
       })
    })
 })

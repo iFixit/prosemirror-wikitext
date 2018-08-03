@@ -57,6 +57,20 @@ const nodes = {
      group: "block",
      parseDOM: [{tag: "blockquote"}],
      toDOM() { return ["blockquote", 0] }
+  },
+
+  image: {
+    inline: true,
+    attrs: {
+      imageid: {},
+      src: {},
+      size: {default: "standard"},
+      align: {default: "left"}
+    },
+    group: "inline",
+    toDOM(node) {
+      return ["img", node.attrs]
+    }
   }
 }
 
