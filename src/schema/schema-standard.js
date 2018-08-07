@@ -60,14 +60,13 @@ const nodes = {
   },
 
   image: {
-    inline: true,
     attrs: {
       imageid: {},
       src: {},
       size: {default: "standard"},
       align: {default: "left"}
     },
-    group: "inline",
+    group: "block",
     toDOM(node) {
       return ["img", node.attrs]
     }
