@@ -20,16 +20,15 @@
     "prosemirror-schema-list": "^1.0.1"
   },
   "devDependencies": {
-    "buble": "~0.14.0",
-    "ist": "1.0.0",
-    "mocha": "^5.2.0",
-    "punycode": "^1.4.0",
-    "rimraf": "^2.5.4"
+    "@types/jest": "^24.0.15",
+    "@types/node": "^12.6.2",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
   },
   "scripts": {
-    "test": "mocha",
-    "build": "rimraf dist && buble -i src -o dist",
-    "link-src": "rimraf dist && ln -s src dist",
+    "test": "jest",
+    "build": "tsc",
     "prepublishOnly": "npm run build"
   }
 }
