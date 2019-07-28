@@ -1,10 +1,7 @@
-/**
- * Chris Opperwall
- *
- * 10-1-2016
- */
-
 class WikiTextSerializer {
+   private nodes;
+   private marks;
+
    constructor(nodes, marks) {
       this.nodes = nodes
       this.marks = marks
@@ -15,23 +12,47 @@ class WikiTextSerializer {
       const state = new WikiTextSerializerState(this.nodes, this.marks, schema)
 
       state.renderDoc(content)
-      return state.out.trim()
+      return state.getOut().trim()
    }
 }
 
 class WikiTextSerializerState {
+   private nodes;
+   private marks;
+   private prefix : string;
+   private out : string;
+   private currentlyOpenMarks : Array<any>;
+   private spaces : string;
+   private schema;
+
    constructor(nodes, marks, schema) {
       this.nodes = nodes
       this.marks = marks
-      this.schema = schema
       this.prefix = ""
       this.out = ""
+      this.schema = schema;
 
       // Keep track of currently open marks so that we know when they need to
       // be closed.
       this.currentlyOpenMarks = [];
       // Store spaces from the end of a node to be output after the wiki markup
       this.spaces = '';
+   }
+
+   getOut() : string {
+      return this.out;
+   }
+
+   getPrefix() : string {
+      return this.prefix;
+   }
+
+   getSchema()  {
+      return this.schema;
+   }
+
+   append(text : string) : void {
+      this.out += text;
    }
 
    renderDoc(content) {
@@ -127,7 +148,7 @@ class WikiTextSerializerState {
          nodeMarkLengths.set(node, lengths)
       };
 
-      const children = []
+      const children: Array<any> = []
       node.forEach(c => children.push(c))
       children.reverse()
       children.forEach(findMarkLengths)
@@ -231,48 +252,49 @@ class WikiTextSerializerState {
 
 const serializer = new WikiTextSerializer({
    // Nodes
-   paragraph(state, node) {
-      if (state.prefix) {
-         state.out += state.prefix + " "
+   paragraph(state : WikiTextSerializerState, node) {
+      const prefix = state.getPrefix();
+      if (prefix) {
+         state.append(prefix + " ")
       }
 
       state.inline(node)
-      state.out += "\n"
+      state.append("\n")
 
-      if (!state.prefix) {
-         state.out += "\n"
+      if (!prefix) {
+         state.append("\n")
       }
    },
 
-   text(state, node) {
-      state.text(node)
+   text(state : WikiTextSerializerState, node) {
+      state.text(node, undefined)
       // A lone text node is in effect a very short inline.
       state.end_inline()
    },
 
-   hard_break(state, node) {
-      state.out += "[br]\n"
+   hard_break(state : WikiTextSerializerState, node) {
+      state.append("[br]\n")
    },
 
-   heading(state, node) {
+   heading(state : WikiTextSerializerState, node) {
       let headerTag = "=".repeat(node.attrs.level)
-      state.out += headerTag + " "
+      state.append(headerTag + " ")
       state.inline(node)
-      state.out += " " + headerTag + "\n"
+      state.append(" " + headerTag + "\n")
    },
 
-   image(state, node) {
+   image(state : WikiTextSerializerState, node) {
       const {imageid, align, size} = node.attrs
-      state.out += `[image|${imageid}|align=${align}|size=${size}]`
+      state.append(`[image|${imageid}|align=${align}|size=${size}]`)
    },
 
-   code_block(state, node) {
-      state.out += "[code]\n"
+   code_block(state : WikiTextSerializerState, node) {
+      state.append("[code]\n")
       state.inline(node)
-      state.out += "\n[/code]\n"
+      state.append("\n[/code]\n")
    },
 
-   blockquote(state, node) {
+   blockquote(state : WikiTextSerializerState, node) {
       let {attribute, format} = node.attrs
       let attrSpec = node.type.spec.attrs
 
@@ -280,32 +302,32 @@ const serializer = new WikiTextSerializer({
          attribute = null
       }
 
-      state.out += "[quote"
+      state.append("[quote")
 
       // A blockquote attribute can be rich text, so we store it in a node
       // attribute and then built it into an actual node using
       // schema.nodeFromJSON.
       if (attribute && attribute !== attrSpec.attribute.default) {
-         state.out += "|"
+         state.append("|")
 
-         attribute = state.schema.nodeFromJSON(attribute)
+         attribute = state.getSchema().nodeFromJSON(attribute)
          state.inline(attribute)
       }
 
       if (format && format !== attrSpec.format.default) {
-         state.out += "|format=" + format
+         state.append("|format=" + format);
       }
 
-      state.out += "]\n"
+      state.append("]\n");
       state.inline(node)
-      state.out += "[/quote]\n"
+      state.append("[/quote]\n");
    },
 
-   ordered_list(state, node) {
+   ordered_list(state : WikiTextSerializerState, node) {
       state.renderList(node, '#')
    },
 
-   bullet_list(state, node) {
+   bullet_list(state : WikiTextSerializerState, node) {
       state.renderList(node, '*')
    }
 }, {
@@ -344,4 +366,4 @@ const serializer = new WikiTextSerializer({
    }
 })
 
-module.exports = serializer
+export default serializer
