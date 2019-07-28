@@ -1,4 +1,4 @@
-const {Schema} = require("prosemirror-model")
+import { Schema } from 'prosemirror-model'
 
 const nodes = {
   doc: {
@@ -18,8 +18,6 @@ const nodes = {
     toDOM(node) { return node.text }
   }
 }
-
-exports.nodes = nodes
 
 const marks = {
   em: {
@@ -59,7 +57,10 @@ const marks = {
   }
 }
 
-exports.marks = marks
-
 const schema = new Schema({nodes, marks})
-exports.schema = schema
+
+export default {
+  nodes,
+  marks,
+  schema
+}
