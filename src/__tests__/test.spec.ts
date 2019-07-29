@@ -1,14 +1,14 @@
-import { Schema } from 'prosemirror-model';
+import { Schema, NodeSpec, MarkSpec } from 'prosemirror-model';
 import { addListNodes } from 'prosemirror-schema-list';
 import { serializer, minimal_schema, standard_schema } from '../index';
 
 const minimalSchema = new Schema({
-   nodes: minimal_schema.nodes,
-   marks: minimal_schema.marks
+   nodes: (minimal_schema.nodes as NodeSpec),
+   marks: (minimal_schema.marks as MarkSpec)
 })
 const standardSchema = new Schema({
-   nodes: standard_schema.nodes,
-   marks: standard_schema.marks
+   nodes: (standard_schema.nodes as NodeSpec),
+   marks: (standard_schema.marks as MarkSpec)
 })
 const listSchema = new Schema({
    nodes: addListNodes(standardSchema.spec.nodes, "paragraph block*", "block"),

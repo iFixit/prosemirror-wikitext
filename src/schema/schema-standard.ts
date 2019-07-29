@@ -1,6 +1,6 @@
-import { Schema } from 'prosemirror-model';
+import { Schema, NodeSpec, MarkSpec } from 'prosemirror-model';
 
-const nodes = {
+const nodes: NodeSpec = {
   doc: {
     content: "block+"
   },
@@ -74,7 +74,7 @@ const nodes = {
   }
 }
 
-const marks = {
+const marks: MarkSpec = {
   em: {
     parseDOM: [{tag: "i"}, {tag: "em"},
       {style: "font-style", getAttrs: value => value == "italic" && null}],
