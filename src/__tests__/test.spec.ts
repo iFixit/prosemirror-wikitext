@@ -1,14 +1,16 @@
-import { Schema, NodeSpec, MarkSpec } from 'prosemirror-model';
+import { Schema } from 'prosemirror-model';
 import { addListNodes } from 'prosemirror-schema-list';
-import { serializer, minimal_schema, standard_schema } from '../index';
+import Wikitext from '../index';
+
+const { serializer, minimal_schema, standard_schema } = Wikitext;
 
 const minimalSchema = new Schema({
-   nodes: (minimal_schema.nodes as NodeSpec),
-   marks: (minimal_schema.marks as MarkSpec)
+   nodes: minimal_schema.nodes,
+   marks: minimal_schema.marks
 })
 const standardSchema = new Schema({
-   nodes: (standard_schema.nodes as NodeSpec),
-   marks: (standard_schema.marks as MarkSpec)
+   nodes: standard_schema.nodes,
+   marks: standard_schema.marks
 })
 const listSchema = new Schema({
    nodes: addListNodes(standardSchema.spec.nodes, "paragraph block*", "block"),
@@ -253,6 +255,7 @@ describe('Standard Schema Tests', function() {
          const expected = "== Heading Two =="
 
          const output = serializeStandardTestCase(input)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -322,6 +325,14 @@ describe('List Schema Tests', function() {
       it('should serialize into a one level ordered list', function() {
          const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"First list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Third list item"}]}]}]}]}
          const expected = "# First list item\n# Second list item\n# Third list item"
+
+         const output = serializeListTestCase(input)
+         expect(output).toEqual(expected);
+      })
+
+      it('should include marks correctly in the list items', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","marks": [{"type": "em"}],"text":"First list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Third list item"}]}]}]}]}
+         const expected = "# ''First list item''\n# Second list item\n# Third list item"
 
          const output = serializeListTestCase(input)
          expect(output).toEqual(expected);
