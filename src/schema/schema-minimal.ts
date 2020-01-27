@@ -35,7 +35,7 @@ const marks: MarkSpec = {
 
   underline: {
     parseDOM: [{tag: "u"},
-               {style: "text-decoration", getAttrs: value => value == "italic" && null}],
+               {style: "text-decoration", getAttrs: value => value == "underline" && null}],
     toDOM() { return ["u"] }
   },
 

@@ -127,6 +127,13 @@ class WikiTextSerializerState {
       const nodeMarkLengths = new Map()
       // Compute mark lengths
       let findMarkLengths = (node) => {
+         // Exit early if there are no marks.
+         if (!node.marks.length) {
+            currentMarkLengths.forEach((v, k) => currentMarkLengths.delete(k));
+            nodeMarkLengths.set(node, new Map());
+            return;
+         }
+
          // Gather all the marks on this node (by name, so they will match the
          // marks from previous nodes).
          let marks = node.marks.map(m => m.type.name)
@@ -184,6 +191,8 @@ class WikiTextSerializerState {
    text(node: Node, marklengths): void {
       let marks = node.marks
 
+      // Searches haystack for values in needles and returns the lowest index
+      // found (i.e., the index of the leftmost).
       let firstNeedle = function(haystack, needles) {
          const result = needles.reduce((min, needle) =>
           Math.min(min, haystack.indexOf(needle)), haystack.length)
@@ -202,11 +211,11 @@ class WikiTextSerializerState {
       // We need to close all marks that were opened after the oldest mark we
       // need to close, so that we don't get overlapping marks (i.e. `<i>italic
       // <b>italic bold</i> bold</b>`, but in wiki text).
-      const earliestClose = firstNeedle(this.currentlyOpenMarks, toClose)
+      const oldestClose = firstNeedle(this.currentlyOpenMarks, toClose)
 
-      this.closeMarks(this.currentlyOpenMarks.slice(earliestClose))
+      this.closeMarks(this.currentlyOpenMarks.slice(oldestClose))
       // Remove closed marks from openMarks.
-      this.currentlyOpenMarks = this.currentlyOpenMarks.slice(0, earliestClose)
+      this.currentlyOpenMarks = this.currentlyOpenMarks.slice(0, oldestClose)
 
       // Marks that exist for the current node, but not in currentlyOpenMarks
       // should be opened. This will include marks that were closed to get to
@@ -225,7 +234,7 @@ class WikiTextSerializerState {
       this.currentlyOpenMarks = this.currentlyOpenMarks.concat(toOpen)
       if (node.isText && node.text) {
          // Borrows from src/to_markdown.js from prosemirror-markdown
-         const [, start, text, end]: ReadonlyArray<string | undefined> = node.text.match(/^(\s*)(.*?)(\s*)$/) || [];
+         const [, start, text, end]: ReadonlyArray<string | undefined> = node.text.match(/^(\s*)((?:.|\n)*?)(\s*)$/) || [];
          this.out += this.spaces
          this.out += start
          this.openMarks(toOpen)

@@ -1,6 +1,6 @@
 import { Schema } from 'prosemirror-model';
 import { addListNodes } from 'prosemirror-schema-list';
-import Wikitext from '../index';
+import * as Wikitext from '../index';
 
 const { serializer, minimal_schema, standard_schema } = Wikitext;
 
