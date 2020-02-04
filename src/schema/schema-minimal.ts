@@ -1,6 +1,6 @@
-const {Schema} = require("prosemirror-model")
+import { Schema, NodeSpec, MarkSpec } from 'prosemirror-model'
 
-const nodes = {
+const nodes: NodeSpec = {
   doc: {
     content: "block+"
   },
@@ -19,9 +19,7 @@ const nodes = {
   }
 }
 
-exports.nodes = nodes
-
-const marks = {
+const marks: MarkSpec = {
   em: {
     parseDOM: [{tag: "i"}, {tag: "em"},
                {style: "font-style", getAttrs: value => value == "italic" && null}],
@@ -37,7 +35,7 @@ const marks = {
 
   underline: {
     parseDOM: [{tag: "u"},
-               {style: "text-decoration", getAttrs: value => value == "italic" && null}],
+               {style: "text-decoration", getAttrs: value => value == "underline" && null}],
     toDOM() { return ["u"] }
   },
 
@@ -59,7 +57,10 @@ const marks = {
   }
 }
 
-exports.marks = marks
-
 const schema = new Schema({nodes, marks})
-exports.schema = schema
+
+export default {
+  nodes,
+  marks,
+  schema
+}

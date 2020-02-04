@@ -11,7 +11,7 @@ iFixit's custom wiki text syntax.
 npm run build
 ```
 
-This will run buble to transform all ES2015 source files in `src/` to ES5 in a
+This will run `tsc` to transform all TypeScript source files in `src/` to ES5 in a
 directory called `dist/`
 
 ## Test
@@ -20,7 +20,7 @@ directory called `dist/`
 npm run test
 ```
 
-This currently runs all unit tests in `Tests/`
+This runs all test cases with jest, using the default file match pattern, which runs all files under a `__tests__` directory or any `file.spec.ts` or `file.test.ts` files.
 
 ## License
 

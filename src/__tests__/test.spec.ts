@@ -1,8 +1,8 @@
-const assert = require('assert')
+import { Schema } from 'prosemirror-model';
+import { addListNodes } from 'prosemirror-schema-list';
+import * as Wikitext from '../index';
 
-const {Schema} = require('prosemirror-model')
-const {addListNodes} = require("prosemirror-schema-list")
-const {serializer, minimal_schema, standard_schema} = require('../src')
+const { serializer, minimal_schema, standard_schema } = Wikitext;
 
 const minimalSchema = new Schema({
    nodes: minimal_schema.nodes,
@@ -14,7 +14,7 @@ const standardSchema = new Schema({
 })
 const listSchema = new Schema({
    nodes: addListNodes(standardSchema.spec.nodes, "paragraph block*", "block"),
-   marks: standardSchema.markSpec
+   marks: standardSchema.spec.marks
 })
 
 function serializeTestCase(schema, input) {
@@ -33,7 +33,7 @@ describe('Minimal Tests', function() {
          const expected = ''
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -43,7 +43,7 @@ describe('Minimal Tests', function() {
          const expected = 'This is a paragraph with no formatting.'
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -53,7 +53,7 @@ describe('Minimal Tests', function() {
          const expected = 'This is a paragraph with no formatting.\n\nThis is a second paragraph.'
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -63,7 +63,7 @@ describe('Minimal Tests', function() {
          const expected = "'''This is a paragraph with bold formatting.'''"
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -73,7 +73,7 @@ describe('Minimal Tests', function() {
          const expected = "''This is a paragraph with italic formatting.''"
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -83,7 +83,7 @@ describe('Minimal Tests', function() {
          const expected = "++This is a paragraph with underlined formatting.++"
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -93,7 +93,7 @@ describe('Minimal Tests', function() {
          const expected = "This is a '''bold''' ''italic'' ++underlined++ sentence."
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -103,7 +103,7 @@ describe('Minimal Tests', function() {
          const expected = "This is a '''''paragraph'''''."
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -113,7 +113,7 @@ describe('Minimal Tests', function() {
          const expected = "This is a '''''++paragraph++'''''."
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -123,7 +123,7 @@ describe('Minimal Tests', function() {
          const expected = "'''''This is italic and bold'' and this is just bold'''"
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -133,7 +133,7 @@ describe('Minimal Tests', function() {
          const expected = 'This is text and this is a [https://ifixit.com|link].'
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -143,7 +143,7 @@ describe('Minimal Tests', function() {
          const expected = 'This is text and this is a [https://ifixit.com|link|new_window=true].'
 
          const output = serializeMinimalTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 })
@@ -155,7 +155,7 @@ describe('Standard Schema Tests', function() {
          const expected = "This is a ,,subscripted,, word."
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -165,7 +165,7 @@ describe('Standard Schema Tests', function() {
          const expected = "This is a ^^superscripted^^ word."
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -175,7 +175,7 @@ describe('Standard Schema Tests', function() {
          const expected = "This is a ``code`` word."
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -185,7 +185,7 @@ describe('Standard Schema Tests', function() {
          const expected = "This is a ~~strikethrough~~ word."
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -195,7 +195,7 @@ describe('Standard Schema Tests', function() {
          const expected = "This paragraph has a[br]\nhard break."
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -205,7 +205,7 @@ describe('Standard Schema Tests', function() {
          const expected = "[code]\nThis is in a code block.\n[/code]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -215,7 +215,7 @@ describe('Standard Schema Tests', function() {
          const expected = "[quote]\nThis is a quote.\n\n[/quote]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -225,17 +225,17 @@ describe('Standard Schema Tests', function() {
          const expected = "[quote|Abraham Lincoln]\nThis is a quote.\n\n[/quote]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
    describe('Blockquote with bold attribution', function() {
       it('should include the bolded attribution text', function() {
-         const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "marks": [{"type": "strong"}], "type": "text", "text": "Abraham"}, {"type": "text", "text": " Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
+         const input = {"type":"doc","content":[{"type":"blockquote","attrs":{"format":"long","attribute": {"type": "paragraph", "content": [{"type": "text", "marks": [{"type": "strong"}], "text": "Abraham"}, {"type": "text", "text": " Lincoln"}]}}, "content":[{"type":"paragraph","content":[{"type":"text","text":"This is a quote."}]}]}]}
          const expected = "[quote|'''Abraham''' Lincoln]\nThis is a quote.\n\n[/quote]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -245,7 +245,7 @@ describe('Standard Schema Tests', function() {
          const expected = "[quote|format=featured]\nThis is a quote.\n\n[/quote]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -255,7 +255,7 @@ describe('Standard Schema Tests', function() {
          const expected = "== Heading Two =="
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -265,7 +265,7 @@ describe('Standard Schema Tests', function() {
          const expected = "=== Heading Three ==="
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -275,7 +275,7 @@ describe('Standard Schema Tests', function() {
          const expected = "==== Heading Four ===="
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -285,7 +285,7 @@ describe('Standard Schema Tests', function() {
          const expected = "===== Heading Five ====="
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -295,7 +295,7 @@ describe('Standard Schema Tests', function() {
          const expected = "====== Heading Six ======"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -305,7 +305,7 @@ describe('Standard Schema Tests', function() {
          const expected = "== '''Bold''' ''Italic'' =="
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -315,7 +315,7 @@ describe('Standard Schema Tests', function() {
          const expected = "++Hey I'm underlined, ,,and I'm also subscript,,++"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 })
@@ -327,7 +327,15 @@ describe('List Schema Tests', function() {
          const expected = "# First list item\n# Second list item\n# Third list item"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
+      })
+
+      it('should include marks correctly in the list items', function() {
+         const input = {"type":"doc","content":[{"type":"ordered_list","attrs":{"order":1},"content":[{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","marks": [{"type": "em"}],"text":"First list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Second list item"}]}]},{"type":"list_item","content":[{"type":"paragraph","content":[{"type":"text","text":"Third list item"}]}]}]}]}
+         const expected = "# ''First list item''\n# Second list item\n# Third list item"
+
+         const output = serializeListTestCase(input)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -337,7 +345,7 @@ describe('List Schema Tests', function() {
          const expected = "# one\n## two"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -347,7 +355,7 @@ describe('List Schema Tests', function() {
          const expected = "# one\n## two\n### three"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -357,7 +365,7 @@ describe('List Schema Tests', function() {
          const expected = "* First list item\n* Second list item\n* Third list item"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -367,7 +375,7 @@ describe('List Schema Tests', function() {
          const expected = "* one\n** two"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -377,7 +385,7 @@ describe('List Schema Tests', function() {
          const expected = "* one\n** two\n*** three"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -387,7 +395,7 @@ describe('List Schema Tests', function() {
          const expected = "* One\n** One again\n* Two"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -397,7 +405,7 @@ describe('List Schema Tests', function() {
          const expected = "# First Ordered\n** Second Nested Bullet"
 
          const output = serializeListTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 })
@@ -409,7 +417,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "'''this ''is ++text++''''' ++''with'' styles++"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -419,7 +427,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "'''this ''is''''' ''text'' '''with styles'''"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -429,7 +437,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "'''this''is'''''''text'''''with styles'''"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -439,7 +447,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "This is a '''''++thing!++'''''"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -449,7 +457,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "[http://example.com|this link][https://www.ifixit.com|is near this one]"
 
          const output = serializeStandardTestCase(input)
-         assert.equal(expected, output)
+         expect(output).toEqual(expected);
       })
    })
 
@@ -459,7 +467,7 @@ describe('Advanced Formatting Tests', function() {
          const expected = "[image|1024|align=left|size=standard]"
 
          const output = serializeStandardTestCase(input);
-         assert.equal(expected, output);
+         expect(output).toEqual(expected);
       })
    })
 })

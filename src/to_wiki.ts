@@ -1,31 +1,45 @@
-/**
- * Chris Opperwall
- *
- * 10-1-2016
- */
+import { Schema, Node, Mark } from "prosemirror-model";
+
+type MarkFn = (Mark) => string
+
+interface MarkDefinition {
+   open: string | MarkFn,
+   close: string | MarkFn
+}
 
 class WikiTextSerializer {
-   constructor(nodes, marks) {
+   private nodes: object;
+   private marks: object;
+
+   constructor(nodes: object, marks: object) {
       this.nodes = nodes
       this.marks = marks
    }
 
-   serialize(content) {
+   serialize(content: Node): string {
       const schema = content.type.schema
       const state = new WikiTextSerializerState(this.nodes, this.marks, schema)
 
       state.renderDoc(content)
-      return state.out.trim()
+      return state.getOut().trim()
    }
 }
 
 class WikiTextSerializerState {
-   constructor(nodes, marks, schema) {
+   private nodes: object;
+   private marks: object;
+   private prefix: string;
+   private out: string;
+   private currentlyOpenMarks: Array<Mark>;
+   private spaces: string;
+   private schema: Schema;
+
+   constructor(nodes: object, marks: object, schema: Schema) {
       this.nodes = nodes
       this.marks = marks
-      this.schema = schema
       this.prefix = ""
       this.out = ""
+      this.schema = schema;
 
       // Keep track of currently open marks so that we know when they need to
       // be closed.
@@ -34,11 +48,27 @@ class WikiTextSerializerState {
       this.spaces = '';
    }
 
-   renderDoc(content) {
+   getOut(): string {
+      return this.out;
+   }
+
+   getPrefix(): string {
+      return this.prefix;
+   }
+
+   getSchema(): Schema  {
+      return this.schema;
+   }
+
+   append(text: string): void {
+      this.out += text;
+   }
+
+   renderDoc(content: Node): void {
       content.forEach(n => this.render(n))
    }
 
-   render(node) {
+   render(node: Node): void {
       this.nodes[node.type.name](this, node)
    }
 
@@ -53,7 +83,7 @@ class WikiTextSerializerState {
     *
     * After the callback has completed, restore the prefix to the old value.
     */
-   renderPrefix(node, prefix, func) {
+   renderPrefix(node: Node, prefix: string, func: Function): void {
       let oldPrefix = this.prefix
       let prefixDepth = oldPrefix.length + prefix.length
       this.prefix = prefix.repeat(prefixDepth)
@@ -64,7 +94,7 @@ class WikiTextSerializerState {
    }
 
    // Prefix a node's text with the given list syntax.
-   renderList(node, prefix) {
+   renderList(node: Node, prefix: string): void {
       // Need to run renderPrefix() on each child of node.
       // In this case node is either the ordered_list or bullet_list node, and
       // prefix is either '#' or '*' based on the node type.
@@ -92,11 +122,18 @@ class WikiTextSerializerState {
    //   will include any marks popped in step 2 which are supposed to be on the
    //   node.
    //
-   inline(node) {
+   inline(node: Node): void {
       const currentMarkLengths = new Map()
       const nodeMarkLengths = new Map()
       // Compute mark lengths
       let findMarkLengths = (node) => {
+         // Exit early if there are no marks.
+         if (!node.marks.length) {
+            currentMarkLengths.forEach((v, k) => currentMarkLengths.delete(k));
+            nodeMarkLengths.set(node, new Map());
+            return;
+         }
+
          // Gather all the marks on this node (by name, so they will match the
          // marks from previous nodes).
          let marks = node.marks.map(m => m.type.name)
@@ -127,7 +164,7 @@ class WikiTextSerializerState {
          nodeMarkLengths.set(node, lengths)
       };
 
-      const children = []
+      const children: Array<Node> = []
       node.forEach(c => children.push(c))
       children.reverse()
       children.forEach(findMarkLengths)
@@ -137,7 +174,7 @@ class WikiTextSerializerState {
       this.end_inline()
    }
 
-   end_inline() {
+   end_inline(): void {
       // After all nodes have been handled, close any marks that are still open
       this.closeMarks(this.currentlyOpenMarks)
       this.currentlyOpenMarks = []
@@ -151,9 +188,11 @@ class WikiTextSerializerState {
     * If marklengths is available, it will be used to decide in what order to
     * apply marks to the text
     */
-   text(node, marklengths) {
+   text(node: Node, marklengths): void {
       let marks = node.marks
 
+      // Searches haystack for values in needles and returns the lowest index
+      // found (i.e., the index of the leftmost).
       let firstNeedle = function(haystack, needles) {
          const result = needles.reduce((min, needle) =>
           Math.min(min, haystack.indexOf(needle)), haystack.length)
@@ -172,11 +211,11 @@ class WikiTextSerializerState {
       // We need to close all marks that were opened after the oldest mark we
       // need to close, so that we don't get overlapping marks (i.e. `<i>italic
       // <b>italic bold</i> bold</b>`, but in wiki text).
-      const earliestClose = firstNeedle(this.currentlyOpenMarks, toClose)
+      const oldestClose = firstNeedle(this.currentlyOpenMarks, toClose)
 
-      this.closeMarks(this.currentlyOpenMarks.slice(earliestClose))
+      this.closeMarks(this.currentlyOpenMarks.slice(oldestClose))
       // Remove closed marks from openMarks.
-      this.currentlyOpenMarks = this.currentlyOpenMarks.slice(0, earliestClose)
+      this.currentlyOpenMarks = this.currentlyOpenMarks.slice(0, oldestClose)
 
       // Marks that exist for the current node, but not in currentlyOpenMarks
       // should be opened. This will include marks that were closed to get to
@@ -193,9 +232,9 @@ class WikiTextSerializerState {
       }
 
       this.currentlyOpenMarks = this.currentlyOpenMarks.concat(toOpen)
-      if (node.isText) {
+      if (node.isText && node.text) {
          // Borrows from src/to_markdown.js from prosemirror-markdown
-         const [match, start, text, end] = node.text.match(/^(\s*)(.*?)(\s*)$/)
+         const [, start, text, end]: ReadonlyArray<string | undefined> = node.text.match(/^(\s*)((?:.|\n)*?)(\s*)$/) || [];
          this.out += this.spaces
          this.out += start
          this.openMarks(toOpen)
@@ -210,7 +249,7 @@ class WikiTextSerializerState {
 
    }
 
-   closeMarks(marks) {
+   closeMarks(marks : ReadonlyArray<Mark>) {
       this.out += marks.reduceRight((carry, mark) => {
          let close = this.marks[mark.type.name].close
          let markText = (typeof close === "function") ? close(mark) : close
@@ -219,7 +258,7 @@ class WikiTextSerializerState {
       }, '')
    }
 
-   openMarks(marks) {
+   openMarks(marks): void {
       this.out += marks.reduce((carry, mark) => {
          let open = this.marks[mark.type.name].open
          let markText = (typeof open === "function") ? open(mark) : open
@@ -231,48 +270,49 @@ class WikiTextSerializerState {
 
 const serializer = new WikiTextSerializer({
    // Nodes
-   paragraph(state, node) {
-      if (state.prefix) {
-         state.out += state.prefix + " "
+   paragraph(state: WikiTextSerializerState, node: Node): void {
+      const prefix = state.getPrefix();
+      if (prefix) {
+         state.append(prefix + " ")
       }
 
       state.inline(node)
-      state.out += "\n"
+      state.append("\n")
 
-      if (!state.prefix) {
-         state.out += "\n"
+      if (!prefix) {
+         state.append("\n")
       }
    },
 
-   text(state, node) {
-      state.text(node)
+   text(state: WikiTextSerializerState, node: Node): void {
+      state.text(node, undefined)
       // A lone text node is in effect a very short inline.
       state.end_inline()
    },
 
-   hard_break(state, node) {
-      state.out += "[br]\n"
+   hard_break(state: WikiTextSerializerState, node: Node): void {
+      state.append("[br]\n")
    },
 
-   heading(state, node) {
+   heading(state: WikiTextSerializerState, node: Node): void {
       let headerTag = "=".repeat(node.attrs.level)
-      state.out += headerTag + " "
+      state.append(headerTag + " ")
       state.inline(node)
-      state.out += " " + headerTag + "\n"
+      state.append(" " + headerTag + "\n")
    },
 
-   image(state, node) {
+   image(state: WikiTextSerializerState, node: Node): void {
       const {imageid, align, size} = node.attrs
-      state.out += `[image|${imageid}|align=${align}|size=${size}]`
+      state.append(`[image|${imageid}|align=${align}|size=${size}]`)
    },
 
-   code_block(state, node) {
-      state.out += "[code]\n"
+   code_block(state: WikiTextSerializerState, node: Node): void {
+      state.append("[code]\n")
       state.inline(node)
-      state.out += "\n[/code]\n"
+      state.append("\n[/code]\n")
    },
 
-   blockquote(state, node) {
+   blockquote(state: WikiTextSerializerState, node: Node): void {
       let {attribute, format} = node.attrs
       let attrSpec = node.type.spec.attrs
 
@@ -280,32 +320,34 @@ const serializer = new WikiTextSerializer({
          attribute = null
       }
 
-      state.out += "[quote"
+      state.append("[quote")
 
-      // A blockquote attribute can be rich text, so we store it in a node
-      // attribute and then built it into an actual node using
-      // schema.nodeFromJSON.
-      if (attribute && attribute !== attrSpec.attribute.default) {
-         state.out += "|"
+      if (attrSpec) {
+         // A blockquote attribute can be rich text, so we store it in a node
+         // attribute and then built it into an actual node using
+         // schema.nodeFromJSON.
+         if (attribute && attribute !== attrSpec.attribute.default) {
+            state.append("|")
 
-         attribute = state.schema.nodeFromJSON(attribute)
-         state.inline(attribute)
+            attribute = state.getSchema().nodeFromJSON(attribute)
+            state.inline(attribute)
+         }
+
+         if (format && format !== attrSpec.format.default) {
+            state.append("|format=" + format);
+         }
       }
 
-      if (format && format !== attrSpec.format.default) {
-         state.out += "|format=" + format
-      }
-
-      state.out += "]\n"
+      state.append("]\n");
       state.inline(node)
-      state.out += "[/quote]\n"
+      state.append("[/quote]\n");
    },
 
-   ordered_list(state, node) {
+   ordered_list(state: WikiTextSerializerState, node: Node): void {
       state.renderList(node, '#')
    },
 
-   bullet_list(state, node) {
+   bullet_list(state: WikiTextSerializerState, node: Node): void {
       state.renderList(node, '*')
    }
 }, {
@@ -339,9 +381,10 @@ const serializer = new WikiTextSerializer({
       close: "~~",
    },
    link: {
-      open: mark => "[" + mark.attrs.href + "|",
-      close: mark => (mark.attrs.target === "_blank") ? '|new_window=true]' : ']'
+      open: (mark: Mark): string => "[" + mark.attrs.href + "|",
+      close: (mark: Mark): string => (mark.attrs.target === "_blank") ? '|new_window=true]' : ']'
    }
 })
 
-module.exports = serializer
+
+export default serializer
